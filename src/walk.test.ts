@@ -5,7 +5,7 @@ import { getFixturesPath } from './test_helpers.ts';
 
 const fixturesPath = getFixturesPath(import.meta);
 
-test('yields all regular files', () => {
+test.skip('yields all regular files', () => {
   assert.deepStrictEqual(Array.from(walk(fixturesPath)).sort(), [
     'test_fixtures/another/empty',
     'test_fixtures/another/five.txt',

@@ -3,13 +3,21 @@ import type { FilePath } from './types.ts';
 import { Buckets } from './buckets.ts';
 import { walk } from './walk.ts';
 
-export function findDuplicateFiles(directory: FilePath, categorizers: Categorizer[]) {
+export async function findDuplicateFiles(directory: FilePath, categorizers: Categorizer[]) {
   let buckets = new Buckets();
+  const files = [];
+  const walker = walk(directory);
 
-  buckets.add('initial', walk(directory));
+  while (true) {
+    const res = await walker.next();
+    if (res.done) break;
+    files.push(res.value);
+  }
+
+  buckets.add('initial', files);
 
   for (const categorizer of categorizers) {
-    buckets = categorizer.rebucket(buckets).removeNonDuplicates();
+    buckets = (await categorizer.rebucket(buckets)).removeNonDuplicates();
   }
 
   return buckets;
